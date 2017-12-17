@@ -12,7 +12,7 @@ public class Clientus {
         //String hostName = args[0];
         //int portNumber = Integer.parseInt(args[1]);
 
-    	String hostName = "localhost";
+    	String hostName = "192.168.0.87";
     	int portNumber = 4040;
     	
     	try (
