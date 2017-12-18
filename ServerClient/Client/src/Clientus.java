@@ -3,20 +3,11 @@ import java.net.*;
 
 public class Clientus {
     public static void main(String[] args) throws IOException {
-        
-        //if (args.length != 2) {
-        //    System.err.println("Usage: java EchoClient <host name> <port number>");
-        //    System.exit(1);
-        //}
-
-        //String hostName = args[0];
-        //int portNumber = Integer.parseInt(args[1]);
-
-    	String hostName = "192.168.0.87";
-    	int portNumber = 4040;
+    	
+    	String hostName = "localhost"; // pentru testele locale folosesti local host. cand o sa avem serveru tinut sus o sa ai IP
     	
     	try (
-                Socket echoSocket = new Socket(hostName, portNumber);
+                Socket echoSocket = new Socket(hostName, 4040);
                 PrintWriter out =
                     new PrintWriter(echoSocket.getOutputStream(), true);
                 BufferedReader in =
@@ -27,9 +18,11 @@ public class Clientus {
                         new InputStreamReader(System.in))
             ) {
                 String userInput;
-                while ((userInput = stdIn.readLine()) != null) {
+                while (true) {
+                	//user input ii standard in, out.println primeste ce trimiti la server, in.readLine iti da ce iti trimite serveru
+                	userInput = stdIn.readLine();
                     out.println(userInput);
-                    if(userInput.toLowerCase().contains("close_all")) break;
+                    if(userInput.toLowerCase().contains("close")) break; //daca primeste close se inchide conexiunea
                     System.out.println("echo: " + in.readLine());
                 }
             } catch (UnknownHostException e) {

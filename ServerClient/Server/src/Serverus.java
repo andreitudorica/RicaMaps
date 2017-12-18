@@ -1,33 +1,58 @@
 import java.net.*;
 import java.io.*;
+import java.lang.Thread;
 
 public class Serverus {
-	public static void main(String[] args) throws IOException {
-		int portNumber = 4040;
+	public static void main (String[] args) {
+		System.out.println("Started multithreaded server on port 4040");
 
-		while (true) {
-			System.out.println("am pornit in pula mea de server pa pornNumberu " + portNumber);
+		try (ServerSocket serverSocket = new ServerSocket(4040);) {
+			while (true) {
+				Socket clientSocket = serverSocket.accept();
 
-			try (ServerSocket serverSocket = new ServerSocket(portNumber);
-					Socket clientSocket = serverSocket.accept();
-
-					PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-					BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));) {
-				System.out.println("Am primit cleent");
-				String inputLine;
-				while ((inputLine = in.readLine()) != null) {
-					System.out.println("Cleentu o zis " + inputLine);
-					if (inputLine.toLowerCase().contains("close_all"))
-						break;
-					inputLine = "\"" + inputLine + "\" o zis cleentu";
-					out.println(inputLine);
-				}
-			} catch (IOException e) {
-				System.out.println("Exception caught when trying to listen on port " + portNumber
-						+ " or listening for a connection");
-				System.out.println(e.getMessage());
+				ClientHandler handler = new ClientHandler(clientSocket);
+				handler.start();
 			}
-			System.out.println("Closing server connection...");
+		} catch (IOException e) {
+			System.out.println(
+					"Exception caught when trying to listen on port 4040 or listening for a connection");
+			System.out.println(e.getMessage());
+		}
+	}
+}
+
+class ClientHandler extends Thread {
+	Socket client;
+
+	ClientHandler(Socket client) {
+		this.client = client;
+	}
+
+	public void run() {
+		try {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(client.getInputStream()));
+			PrintWriter writer = new PrintWriter(client.getOutputStream(), true);
+			System.out.println("Am primit cleent");
+			while (true) {
+				String line = reader.readLine();
+				if (line.toLowerCase().equals("close")) //daca primeste close se inchide threadul cu conexiunea curenta
+					break;
+				
+				//in line ai stringu de la client. faci aici interogarea si dai write.println cu mesajul pe care vrei sa il trimiti
+				System.out.println("Cleentu o zis " + line);
+				line = "\"" + line + "\" o zis cleentu";
+				writer.println(line);
+				//astea 3 linii le schimbi cu ce iti doreste tie inima
+				
+			}
+		} catch (Exception e) {
+			System.err.println("Exception caught: client disconnected.");
+		} finally {
+			try {
+				client.close();
+			} catch (Exception e) {
+				;
+			}
 		}
 	}
 }
