@@ -31,9 +31,10 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity implements AsyncResponse{
+
     private MapView mapView;
     private MapboxMap mapboxM;
-
+    /*
     final Button btnStart = null;
     final Button btnEnd = null;
 
@@ -44,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse{
     final Button btnOk = null;
     final Button btnTime = null;
     final Button btnNav = null;
-
+    */
     final int[] time = new int[2];
 
 
@@ -72,8 +73,10 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse{
         final Button btnOk = findViewById(R.id.btnOk);
         final Button btnTime = findViewById(R.id.btnSel);
         final Button btnNav = findViewById(R.id.startButton);
-
+        final TextView clockBg = findViewById(R.id.clockBg);
         final TextView dur = findViewById(R.id.lblDuration);
+        final Button btnClear = findViewById(R.id.btnClear);
+
 
         final String[] response = {""};
 
@@ -81,13 +84,12 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse{
 
         Calendar rightNow = Calendar.getInstance();
 
-        txtResponse = (TextView) findViewById(R.id.textResponse);
-
         time[0] = rightNow.get(Calendar.HOUR_OF_DAY);
         time[1] = rightNow.get(Calendar.MINUTE);
 
         timePicker.setVisibility(View.INVISIBLE);
         btnOk.setVisibility(View.INVISIBLE);
+        clockBg.setVisibility(View.INVISIBLE);
 
 
         btnStart.setOnClickListener(new View.OnClickListener() {
@@ -112,6 +114,7 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse{
                 btnNav.setVisibility(View.INVISIBLE);
                 timePicker.setVisibility(View.VISIBLE);
                 btnOk.setVisibility(View.VISIBLE);
+                clockBg.setVisibility(View.VISIBLE);
             }
         });
 
@@ -126,6 +129,7 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse{
                 btnOk.setVisibility(View.INVISIBLE);
                 time[0] = timePicker.getHour();
                 time[1] = timePicker.getMinute();
+                clockBg.setVisibility(View.INVISIBLE);
                 String str;
                 if (time[1] < 10) {
                     str = String.valueOf(time[0]) + ":0" + String.valueOf(time[1]);
@@ -144,17 +148,25 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse{
                 btnNav.setOnClickListener(new View.OnClickListener() {
                     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
                     public void onClick(View v) {
-                        String sendStr = startP[0].getPosition().toString() + " " +
-                                endP[0].getPosition().toString() + " " +
-                                time[0] + " " +
+                        String sendStr = startP[0].getPosition().getLatitude() + "-" +
+                                startP[0].getPosition().getLongitude() + "-" +
+                                endP[0].getPosition().getLatitude() + "-" +
+                                endP[0].getPosition().getLongitude() + "-" +
+                                time[0] + "-" +
                                 time[1];
 
                         mapboxM = mapboxMap;
                         String[] str;
                         str = getData(sendStr);
                         new DrawGeoJson().execute(str[0]);
-                        dur.setText(str[1]);
+                        dur.setText(str[1]+"h "+ str[2]+"m");
                         //System.out.println(str[1]);
+                    }
+                });
+
+                btnClear.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+                        mapboxMap.clear();
                     }
                 });
 
