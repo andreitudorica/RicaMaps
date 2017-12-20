@@ -113,6 +113,16 @@
             android:layout_alignParentRight="true"
             android:text="Done" />
 
+        <TextView
+            android:id="@+id/textResponse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/lblDuration"
+            android:layout_toEndOf="@+id/lblDur"
+            android:layout_toRightOf="@+id/lblDur"
+            android:alpha="0"
+            android:text="TextView" />
+
     </RelativeLayout>
 
 </RelativeLayout>
