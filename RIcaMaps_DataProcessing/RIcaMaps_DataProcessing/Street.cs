@@ -33,10 +33,17 @@ namespace RIcaMaps_DataProcessing
         }
         public String toString()
         {
-            String street = String.Empty;
+            String street = name+"\n";
             foreach (Line l in polyLine)
-                street += l.toString()+",";
+                street += l.toString() + "\n";
+            for (int i= 0;i < 24;i++)
+                street += delays[i]+ " ";
             return street.Remove(street.Length - 1);
+        }
+        public void setDelaysOnLines()
+        {
+            foreach (Line l in polyLine)
+                l.setDelays(delays);
         }
     }
 }
