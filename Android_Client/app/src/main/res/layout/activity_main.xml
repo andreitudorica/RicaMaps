@@ -2,6 +2,7 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:mapbox="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -17,6 +18,26 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="110dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginBottom="0dp"
+            android:background="@color/mapboxGrayLight" />
+
+        <TextView
+            android:id="@+id/clockBg"
+            android:layout_width="match_parent"
+            android:layout_height="500dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/startButton"
+            android:layout_marginTop="27dp"
+            android:background="@color/mapboxGrayLight" />
 
         <Button
             android:id="@+id/startButton"
@@ -53,10 +74,11 @@
             android:id="@+id/lblDuration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/btnSel"
-            android:layout_alignBottom="@+id/btnSel"
-            android:layout_alignLeft="@+id/lblDur"
-            android:layout_alignStart="@+id/lblDur"
+            android:layout_alignBaseline="@+id/lblDur"
+            android:layout_alignBottom="@+id/lblDur"
+            android:layout_toEndOf="@+id/lblDur"
+            android:layout_toRightOf="@+id/lblDur"
+            android:textColor="@android:color/black"
             android:textSize="18sp" />
 
         <TextView
@@ -70,6 +92,7 @@
             android:layout_toEndOf="@+id/btnAddEnd"
             android:layout_toRightOf="@+id/btnAddEnd"
             android:text="@string/duration"
+            android:textColor="@android:color/black"
             android:textSize="18sp" />
 
         <Button
@@ -80,7 +103,7 @@
             android:layout_marginTop="404dp"
             android:layout_toEndOf="@+id/btnAddStart"
             android:layout_toRightOf="@+id/btnAddStart"
-            android:text="Button" />
+            android:text="@string/button" />
 
         <Button
             android:id="@+id/btnSel"
@@ -91,7 +114,7 @@
             android:layout_alignParentBottom="true"
             android:layout_alignRight="@+id/btnAddEnd"
             android:layout_alignStart="@+id/btnAddStart"
-            android:text="Select Time" />
+            android:text="@string/select_time" />
 
         <TimePicker
             android:id="@+id/timePicker"
@@ -108,10 +131,22 @@
             android:id="@+id/btnOk"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/timePicker"
+            android:layout_above="@+id/textView"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:text="Done" />
+            android:text="@string/done" />
+
+
+        <Button
+            android:id="@+id/btnClear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/startButton"
+            android:layout_alignLeft="@+id/lblDur"
+            android:layout_alignParentBottom="true"
+            android:layout_alignRight="@+id/startButton"
+            android:layout_alignStart="@+id/lblDur"
+            android:text="@string/clear" />
 
     </RelativeLayout>
 
