@@ -24,7 +24,7 @@ namespace RIcaMaps_DataProcessing
         }
         public string toString()
         {
-            return location.ToString();
+            return "["+location.Latitude.ToString()+","+location.Longitude.ToString()+"]";
         }
     }
 }

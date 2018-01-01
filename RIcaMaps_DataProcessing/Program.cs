@@ -20,27 +20,29 @@ namespace RIcaMaps_DataProcessing
     }
     class Program
     {
+        public const int INF = 1000000;
         public StreamWriter outFile = new StreamWriter(@"..\..\Routes.txt");
         private static List<Street> streets = new List<Street>();
         private static List<Node> nodes = new List<Node>();
         private static Node NodeOrNull(double a, double b)
         {
-            return nodes.DefaultIfEmpty(null).FirstOrDefault(n => n!=null && n.location.Latitude == a && n.location.Longitude == b);
+            return nodes.DefaultIfEmpty(null).FirstOrDefault(n => n != null && n.location.Latitude == a && n.location.Longitude == b);
         }
         private static Street StreetOrNull(String s)
         {
-            return streets.DefaultIfEmpty(null).FirstOrDefault(str => str!=null && str.name.Equals(s));
+            return streets.DefaultIfEmpty(null).FirstOrDefault(str => str != null && str.name.Equals(s));
         }
         private static void ReadData()
         {
-            StreamReader reader = File.OpenText("../../../polylines.txt");
+            StreamReader reader = File.OpenText("../../../anca.txt");
             String line;
             while ((line = reader.ReadLine()) != null)
             {
+                line = line.Substring(0, line.Length - 2);
                 bool existingStreet = false;
                 Street street = StreetOrNull(line);
                 if (street == null)
-                    street=new Street(line);
+                    street = new Street(line);
                 else
                     existingStreet = true;
                 int n = Int32.Parse(reader.ReadLine());
@@ -85,8 +87,8 @@ namespace RIcaMaps_DataProcessing
             Dictionary<Node, details> D = new Dictionary<Node, details>();
             bool ok;
             foreach (Node n in nodes)
-                D[n] = new details(1000000, null);
-            D[st].dist = 0 ;
+                D[n] = new details(INF, null);
+            D[st].dist = 0;
             foreach (Line l in st.containingLines)
             {
                 D[l.end].dist = l.computeTime(t);
@@ -96,17 +98,22 @@ namespace RIcaMaps_DataProcessing
             {
                 ok = true;
                 foreach (Node n in nodes)
-                    foreach (Line l in n.containingLines)
-                    {
-                        if (D[l.end].dist > D[n].dist + l.computeTime(t + D[n].dist))
+                    if (D[n].dist != INF)
+                        foreach (Line l in n.containingLines)
                         {
-                            D[l.end].dist = D[n].dist + l.computeTime(t + D[n].dist);
-                            ok = false;
+                            double computedTime = l.computeTime(t + D[n].dist);
+                            if (D[l.end].dist > D[n].dist + computedTime)
+                            {
+                                D[l.end].dist = D[n].dist + computedTime;
+                                D[l.end].previous = n;
+                                ok = false;
+                            }
                         }
-                    }
             } while (!ok);
-            using (StreamWriter outFile = new StreamWriter(@"..\..\Routes.txt"))
+          
+                using (StreamWriter outFile = new StreamWriter(@"C:\Users\andre\Desktop\Routes.txt", true))
             {
+
                 foreach (Node n in nodes)
                     if (n != st)
                     {
@@ -115,25 +122,55 @@ namespace RIcaMaps_DataProcessing
                         while (D[current].previous != null)
                         {
                             result.Add(current);
+                            //Console.WriteLine(D[current].dist + " at time "+t);
                             current = D[current].previous;
                         }
-                        String res = String.Empty;
-                        res = res + st.toString() + " " + n.toString() + " " + t / 3600 + ":" + t % 3600 / 60 + " ";
-                        foreach (Node nod in result)
-                            res += nod.toString();
+
+                        String res = nodes.IndexOf(st) + "|"+ nodes.IndexOf(n) + "|"+t/60+"|";
+                        res += nodes.IndexOf(st);
+                        for (int i = result.Count - 1; i >= 0; i--)
+                            res += "," + nodes.IndexOf(result[i]);
+                        res += "|-" + (int)D[n].dist / 60 + "-" + (int)D[n].dist % 60;
                         outFile.WriteLine(res);
+                        result.Clear();
                     }
             }
         }
         static void Main(string[] args)
         {
+            var watch = System.Diagnostics.Stopwatch.StartNew();
             ReadData();
             foreach (Street street in streets)
                 Console.WriteLine(street.toString());
-
+            using (StreamWriter outFile = new StreamWriter(@"C:\Users\andre\Desktop\Routes.txt"))
+            {
+                outFile.Write(nodes[0].toString());
+                for (int i = 1; i < nodes.Count; i++)
+                    outFile.Write("|" + nodes[i].toString());
+                outFile.WriteLine();
+            }
             foreach (Node n in nodes)
+            {
+                Console.WriteLine(n.toString());
                 for (int i = 0; i < 1440; i++)
+                {
+                    Console.WriteLine("at time " + i);
                     FindWays(i * 60, n);
+
+                }
+            }
+           /*for (int i = 0; i < 1440; i++)
+            {
+                Console.WriteLine("at time " + i);
+                FindWays(i * 60, nodes[0]);
+
+            }*/
+            watch.Stop();
+            var elapsedMs = watch.ElapsedMilliseconds;
+            using (StreamWriter outFile = new StreamWriter(@"..\..\time.txt"))
+            {
+                outFile.WriteLine("time elapsed: " + elapsedMs);
+            }
         }
     }
 }

@@ -28,7 +28,7 @@ namespace RIcaMaps_DataProcessing
         }
         public int getDelayForHour(double t)
         {
-            return delays[(int)t / 3600];
+            return delays[((int)t / 3600)%24];
         }
         public void setDelays(List<int> d)
         {
@@ -41,11 +41,11 @@ namespace RIcaMaps_DataProcessing
         public double computeTime(double t)
         {
             double cost = getCost(getLength(), t % 1440);
-            if (t / 3600 != ((t + cost) / 3600))
+            if ((int)t / 3600 != (int)((t + cost) / 3600))
             {
-                double cost1 = t - t % 3600;
-                double dist1 = t * topSpeed * getDelayForHour(t) / 100;
-                double cost2 = getCost(getLength() - dist1, t);
+                double cost1 = ((int)t/3600+1)*3600-t;
+                double dist1 = cost1 * topSpeed * getDelayForHour(t) / 100;
+                double cost2 = getCost(getLength() - dist1, t+3600);
                 return cost1 + cost2;
             }
             return cost;
