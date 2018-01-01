@@ -37,8 +37,8 @@ public class Client extends AsyncTask<String,Void,String> {
             message = params[0];
             System.out.println(message);
             response = "empty";
-
             System.out.println(response);
+
             s = new Socket("192.168.0.87",7900);
             PrintWriter pw = new PrintWriter(s.getOutputStream());
             BufferedReader in = new BufferedReader( new InputStreamReader(s.getInputStream()));
@@ -55,10 +55,6 @@ public class Client extends AsyncTask<String,Void,String> {
 
             //pw.close();
             response = in.readLine();
-            while(response != "" && response !="empty") {
-                response = in.readLine();
-                System.out.println(response);
-            }
             System.out.println(response);
             pw.close();
             in.close();

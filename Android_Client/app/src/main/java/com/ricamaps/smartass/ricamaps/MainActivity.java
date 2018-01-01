@@ -159,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse{
                         String[] str;
                         str = getData(sendStr);
                         new DrawGeoJson().execute(str[0]);
-                        dur.setText(str[1]+"h "+ str[2]+"m");
+                        dur.setText(str[1]+"m "+ str[2]+"s");
                         //System.out.println(str[1]);
                     }
                 });
@@ -167,6 +167,10 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse{
                 btnClear.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
                         mapboxMap.clear();
+                        btnNav.setEnabled(false);
+                        startP[0] = null;
+                        endP[0] = null;
+                        dur.setText("");
                     }
                 });
 
@@ -226,7 +230,7 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse{
         return r;
     }
 
-    private String[] getData(String sendStr){
+    /*private String[] getData(String sendStr){
         try {
             String str = send_data(mapView, sendStr);
             //System.out.println(str);//myClient.response);
@@ -238,6 +242,20 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse{
             e.printStackTrace();
         }
         return null;
+    }*/
+    private String[] getData(String sendStr){
+        String str = "";
+        try {
+            str = send_data(mapView, sendStr);
+            //System.out.println(str);//myClient.response);
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return str.split("-");
+
     }
 
 
