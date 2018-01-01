@@ -227,18 +227,17 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse{
     }
 
     private String[] getData(String sendStr){
-        String str = "";
         try {
-            str = send_data(mapView, sendStr);
+            String str = send_data(mapView, sendStr);
             //System.out.println(str);//myClient.response);
+            System.out.println(str);
+            return str.split("-");
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
-        return str.split("-");
-
+        return null;
     }
 
 

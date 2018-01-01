@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/RicaMAPS.iml" filepath="$PROJECT_DIR$/RicaMAPS.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Android_Client.iml" filepath="$PROJECT_DIR$/Android_Client.iml" />
+      <module fileurl="file://D:\Andrei\Scoala\SE\RicaMaps\Android_Client\RicaMAPS.iml" filepath="D:\Andrei\Scoala\SE\RicaMaps\Android_Client\RicaMAPS.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://D:\Andrei\Scoala\SE\RicaMaps\Android_Client\app\app.iml" filepath="D:\Andrei\Scoala\SE\RicaMaps\Android_Client\app\app.iml" />
     </modules>
   </component>
 </project>

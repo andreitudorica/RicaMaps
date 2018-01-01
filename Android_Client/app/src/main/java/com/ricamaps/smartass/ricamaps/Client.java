@@ -15,7 +15,6 @@ import java.net.Socket;
 public class Client extends AsyncTask<String,Void,String> {
 
     Socket s;
-    PrintWriter pw;
     String message;
     Context c;
     Handler h = new Handler();
@@ -36,24 +35,33 @@ public class Client extends AsyncTask<String,Void,String> {
         try
         {
             message = params[0];
+            System.out.println(message);
             response = "empty";
-            s = new Socket("172.20.10.4",7900);
-            pw = new PrintWriter(s.getOutputStream());
+
+            System.out.println(response);
+            s = new Socket("192.168.0.87",7900);
+            PrintWriter pw = new PrintWriter(s.getOutputStream());
+            BufferedReader in = new BufferedReader( new InputStreamReader(s.getInputStream()));
+
             pw.println(message);
             pw.flush();
+
             h.post(new Runnable() {
                 @Override
                 public void run() {
                     Toast.makeText(c,"Message sent",Toast.LENGTH_LONG).show();
                 }
             });
+
             //pw.close();
-            BufferedReader in =
-                    new BufferedReader(
-                            new InputStreamReader(s.getInputStream()));
             response = in.readLine();
-            //System.out.println(in.readLine());
+            while(response != "" && response !="empty") {
+                response = in.readLine();
+                System.out.println(response);
+            }
+            System.out.println(response);
             pw.close();
+            in.close();
             return response;
 
         }catch(IOException e)
