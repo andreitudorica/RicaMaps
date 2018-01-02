@@ -3,11 +3,11 @@ import java.io.*;
 import java.lang.Thread;
 
 public class Serverus {
-	private static String path = new String("D:\\Andrei\\Scoala\\SE\\RicaMaps\\ServerClient\\Routes.txt");
+	private static String path = new String("C:\\Users\\Andrei\\Desktop\\Routes.txt");
 	private static String[][][] answerStrings = new String[200][200][1500];
 	private static double[][] mapNodes = new double[200][2]; // lat = [n][0],
 																// long = [n][1]
-	private static int nrOfNodes = 0;
+	private static short nrOfNodes = 0;
 
 	public static void main(String[] args) throws IOException {
 
@@ -39,31 +39,8 @@ public class Serverus {
 			indexStart = Integer.parseInt(exploded[0]);
 			indexEnd = Integer.parseInt(exploded[1]);
 			time = Integer.parseInt(exploded[2]);
-			String[] coords = exploded[3].split(",");
-			StringBuilder sb = new StringBuilder(
-					"{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"properties\":{},\"geometry\":{\"type\":\"LineString\",\"coordinates\":[");
 
-			sb.append("[");
-			sb.append(mapNodes[Integer.parseInt(coords[0])][1]);
-			sb.append(",");
-			sb.append(mapNodes[Integer.parseInt(coords[0])][0]);
-			sb.append("]");
-			int first = 0;
-			for (String c : coords) {
-				if (first != 0) {
-					sb.append(",[");
-					sb.append(mapNodes[Integer.parseInt(c)][1]);
-					sb.append(",");
-					sb.append(mapNodes[Integer.parseInt(c)][0]);
-					sb.append("]");
-				}
-				first = 1;
-			}
-			
-			sb.append("]}}]}");
-			sb.append(exploded[4]);
-
-			answerStrings[indexStart][indexEnd][time] = sb.toString();
+			answerStrings[indexStart][indexEnd][time] = exploded[3] + "_" + exploded[4];
 		}
 		br.close();
 
@@ -85,7 +62,32 @@ public class Serverus {
 	public static String getAnswer(String start, String end, int time) {
 		int indexStart = getIndex(start);
 		int indexEnd = getIndex(end);
-		return answerStrings[indexStart][indexEnd][time];
+		
+		String[] exploded = answerStrings[indexStart][indexEnd][time].split("_");
+		
+		String[] coords = exploded[0].split(",");
+		StringBuilder sb = new StringBuilder();
+		sb.append("[");
+		sb.append(mapNodes[Integer.parseInt(coords[0])][1]);
+		sb.append(",");
+		sb.append(mapNodes[Integer.parseInt(coords[0])][0]);
+		sb.append("]");
+		int first = 0;
+		for (String c : coords) {
+			if (first != 0) {
+				sb.append(",[");
+				sb.append(mapNodes[Integer.parseInt(c)][1]);
+				sb.append(",");
+				sb.append(mapNodes[Integer.parseInt(c)][0]);
+				sb.append("]");
+			}
+			first = 1;
+		}
+		
+		sb.append("]}}]}");
+		sb.append(exploded[1]);
+		
+		return sb.toString();
 	}
 
 	private static int getIndex(String latlong) {
@@ -135,7 +137,7 @@ class ClientHandler extends Thread {
 				System.out.println(exploded[5]);
 				int time = Integer.parseInt(exploded[4]) * 60 + Integer.parseInt(exploded[5]);
 
-				String ans = Serverus.getAnswer(exploded[0] + "," + exploded[1], exploded[2] + "," + exploded[3], time);
+				String ans = "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"properties\":{},\"geometry\":{\"type\":\"LineString\",\"coordinates\":[" + Serverus.getAnswer(exploded[0] + "," + exploded[1], exploded[2] + "," + exploded[3], time);
 
 				if (line.toLowerCase().equals("close")) // daca primeste close
 														// se inchide threadul
