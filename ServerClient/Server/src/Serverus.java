@@ -59,12 +59,12 @@ public class Serverus {
 		}
 	}
 
-	public static String getAnswer(String start, String end, int time) {
+	static String getAnswer(String start, String end, int time) {
 		int indexStart = getIndex(start);
 		int indexEnd = getIndex(end);
-		
+
 		String[] exploded = answerStrings[indexStart][indexEnd][time].split("_");
-		
+
 		String[] coords = exploded[0].split(",");
 		StringBuilder sb = new StringBuilder();
 		sb.append("[");
@@ -83,14 +83,14 @@ public class Serverus {
 			}
 			first = 1;
 		}
-		
+
 		sb.append("]}}]}");
 		sb.append(exploded[1]);
-		
+
 		return sb.toString();
 	}
 
-	private static int getIndex(String latlong) {
+	static int getIndex(String latlong) {
 
 		String[] ll = latlong.split(",");
 		double lati = Double.parseDouble(ll[0]);
@@ -125,19 +125,36 @@ class ClientHandler extends Thread {
 			System.out.println("Am primit cleent");
 			while (true) {
 				String line = reader.readLine();
-				System.out.println("Cleentu o zis " + line);
+				System.out.println("Clientu a zis " + line);
 				// line will be x1-y1-x2-y2-h-m
-
+				String ans;
 				String[] exploded = line.split("-");
-				System.out.println(exploded[0]);
-				System.out.println(exploded[1]);
-				System.out.println(exploded[2]);
-				System.out.println(exploded[3]);
-				System.out.println(exploded[4]);
-				System.out.println(exploded[5]);
-				int time = Integer.parseInt(exploded[4]) * 60 + Integer.parseInt(exploded[5]);
 
-				String ans = "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"properties\":{},\"geometry\":{\"type\":\"LineString\",\"coordinates\":[" + Serverus.getAnswer(exploded[0] + "," + exploded[1], exploded[2] + "," + exploded[3], time);
+				if (exploded[0].toLowerCase().equals("ans")) {
+					
+					int start = Serverus.getIndex(exploded[1] + "," + exploded[2]);
+					int end = Serverus.getIndex(exploded[3] + "," + exploded[4]);
+					int howLong = Integer.parseInt(exploded[5]) * 60 + Integer.parseInt(exploded[6]);
+					ans = "";
+					PrintWriter data = new PrintWriter("gotData.txt", "UTF-8");
+					data.println(
+							Integer.toString(start) + "|" + Integer.toString(end) + "|" + Integer.toString(howLong));
+					data.close();
+
+				} else {
+
+					System.out.println(exploded[0]);
+					System.out.println(exploded[1]);
+					System.out.println(exploded[2]);
+					System.out.println(exploded[3]);
+					System.out.println(exploded[4]);
+					System.out.println(exploded[5]);
+					int time = Integer.parseInt(exploded[4]) * 60 + Integer.parseInt(exploded[5]);
+
+					ans = "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"properties\":{},\"geometry\":{\"type\":\"LineString\",\"coordinates\":["
+							+ Serverus.getAnswer(exploded[0] + "," + exploded[1], exploded[2] + "," + exploded[3],
+									time);
+				}
 
 				if (line.toLowerCase().equals("close")) // daca primeste close
 														// se inchide threadul
