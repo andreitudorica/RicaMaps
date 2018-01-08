@@ -15,6 +15,7 @@ import java.net.Socket;
 public class Client extends AsyncTask<String,Void,String> {
 
     Socket s;
+    PrintWriter pw;
     String message;
     Context c;
     Handler h = new Handler();
@@ -24,7 +25,6 @@ public class Client extends AsyncTask<String,Void,String> {
 
     Client(Context c)
     {
-        //this.textResponse = textResponse;
         this.c=c;
 
     }
@@ -35,29 +35,23 @@ public class Client extends AsyncTask<String,Void,String> {
         try
         {
             message = params[0];
-            System.out.println(message);
             response = "empty";
-            System.out.println(response);
-
-            s = new Socket("192.168.0.87",7900);
-            PrintWriter pw = new PrintWriter(s.getOutputStream());
-            BufferedReader in = new BufferedReader( new InputStreamReader(s.getInputStream()));
-
+            s = new Socket("95.77.251.141",7900);
+            pw = new PrintWriter(s.getOutputStream());
             pw.println(message);
             pw.flush();
-
             h.post(new Runnable() {
                 @Override
                 public void run() {
                     Toast.makeText(c,"Message sent",Toast.LENGTH_LONG).show();
                 }
             });
-
             //pw.close();
+            BufferedReader in =
+                    new BufferedReader(
+                            new InputStreamReader(s.getInputStream()));
             response = in.readLine();
-            System.out.println(response);
             pw.close();
-            in.close();
             return response;
 
         }catch(IOException e)
@@ -71,7 +65,6 @@ public class Client extends AsyncTask<String,Void,String> {
     @Override
     protected void onPostExecute(String result) {
         //do stuff
-        //textResponse.setText(response);
         super.onPostExecute(result);
     }
 
