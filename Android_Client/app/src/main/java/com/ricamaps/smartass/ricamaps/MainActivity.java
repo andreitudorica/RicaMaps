@@ -27,6 +27,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -34,18 +35,6 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse{
 
     private MapView mapView;
     private MapboxMap mapboxM;
-    /*
-    final Button btnStart = null;
-    final Button btnEnd = null;
-
-    final Marker[] startP = null;
-    final Marker[] endP = null;
-
-    final TimePicker timePicker = null;
-    final Button btnOk = null;
-    final Button btnTime = null;
-    final Button btnNav = null;
-    */
     final int[] time = new int[2];
 
 
@@ -84,8 +73,10 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse{
 
         Calendar rightNow = Calendar.getInstance();
 
+        final Date dateS = new Date();
         time[0] = rightNow.get(Calendar.HOUR_OF_DAY);
         time[1] = rightNow.get(Calendar.MINUTE);
+        time[2] = rightNow.get(Calendar.SECOND);
 
         timePicker.setVisibility(View.INVISIBLE);
         btnOk.setVisibility(View.INVISIBLE);
@@ -137,7 +128,6 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse{
                     str = String.valueOf(time[0]) + ":" + String.valueOf(time[1]);
                 }
                 btnTime.setText(str);
-                //Toast.makeText(MainActivity.this, String.valueOf(time[0]) + ":" + String.valueOf(time[1]), Toast.LENGTH_LONG).show();
             }
         });
 
@@ -160,7 +150,6 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse{
                         str = getData(sendStr);
                         new DrawGeoJson().execute(str[0]);
                         dur.setText(str[1]+"m "+ str[2]+"s");
-                        //System.out.println(str[1]);
                     }
                 });
 
@@ -171,6 +160,21 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse{
                         startP[0] = null;
                         endP[0] = null;
                         dur.setText("");
+
+                        // data acquisition
+                        String sendStr = "ans" + "-" + startP[0].getPosition().getLatitude() + "-" +
+                                startP[0].getPosition().getLongitude() + "-" +
+                                endP[0].getPosition().getLatitude() + "-" +
+                                endP[0].getPosition().getLongitude() + "-" +
+                                getDiff(dateS);
+                        try {
+                            sendData(v, sendStr);
+                        } catch (ExecutionException e) {
+                            e.printStackTrace();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
                     }
                 });
 
@@ -179,8 +183,6 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse{
 
 
                     public void onMapClick(@NonNull LatLng point) {
-                        //String string = String.format(Locale.US, "User clicked at: %s", point.toString());
-                        //Toast.makeText(MainActivity.this, string, Toast.LENGTH_LONG).show();
                         if (!btnStart.isEnabled()) {
                             btnStart.setEnabled(true);
                             if (startP[0] != null) {
@@ -223,31 +225,26 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse{
         });
     }
 
-    public String send_data(View v, String str) throws ExecutionException, InterruptedException {
+    public String getDiff(Date dateS){
+        String ans = "";
+        Date dateE = new Date();
+
+        long difference = (dateE.getTime() - dateS.getTime())/1000; // returns in milliseconds so we divide by 1000 to get seconds
+
+        return String.valueOf(difference);
+
+    }
+
+    public String sendData(View v, String str) throws ExecutionException, InterruptedException {
         Client ct = new Client(this);
         String r= ct.execute(str).get();
-        //while(ct.getStatus() != AsyncTask.Status.FINISHED){}
         return r;
     }
 
-    /*private String[] getData(String sendStr){
-        try {
-            String str = send_data(mapView, sendStr);
-            //System.out.println(str);//myClient.response);
-            System.out.println(str);
-            return str.split("-");
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }*/
     private String[] getData(String sendStr){
         String str = "";
         try {
-            str = send_data(mapView, sendStr);
-            //System.out.println(str);//myClient.response);
+            str = sendData(mapView, sendStr);
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -317,18 +314,8 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse{
             ArrayList<LatLng> points = new ArrayList<>();
 
             try {
-                /*// Load GeoJSON file
-                InputStream inputStream = getAssets().open("");
-                BufferedReader rd = new BufferedReader(new InputStreamReader(inputStream, Charset.forName("UTF-8")));
-                StringBuilder sb = new StringBuilder();
-                int cp;
-                while ((cp = rd.read()) != -1) {
-                    sb.append((char) cp);
-                }
-
-                inputStream.close();*/
-
                 // Parse JSON
+                System.out.println(str);
                 JSONObject json = new JSONObject(str);
                 JSONArray features = json.getJSONArray("features");
                 JSONObject feature = features.getJSONObject(0);
@@ -349,7 +336,6 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse{
                     }
                 }
             } catch (Exception exception) {
-                //Log.e(TAG, "Exception Loading GeoJSON: " + exception.toString());
                 System.out.println("----------ERROR------------");
             }
 
